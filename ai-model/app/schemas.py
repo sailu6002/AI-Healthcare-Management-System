@@ -49,10 +49,22 @@ class PatientHealthProfile(BaseModel):
     blood_urea: Optional[float] = Field(None, ge=0, le=400, description="mg/dL")
     hemoglobin: Optional[float] = Field(None, ge=2, le=25, description="g/dL")
 
+    # Urinalysis values (optional; consumed by the kidney model)
+    urine_specific_gravity: Optional[float] = Field(None, ge=1.0, le=1.06)
+    urine_albumin: Optional[int] = Field(None, ge=0, le=5)
+    urine_sugar: Optional[int] = Field(None, ge=0, le=5)
+
+    # Cardiac diagnostics (optional; consumed by the heart model)
+    chest_pain_type: Optional[int] = Field(None, ge=1, le=4)
+    max_heart_rate: Optional[float] = Field(None, ge=50, le=250)
+    exercise_angina: Optional[bool] = None
+    st_depression: Optional[float] = Field(None, ge=0, le=10)
+
     pregnancies: Optional[int] = Field(None, ge=0, le=20)
 
     smoker: bool = False
     hypertension: bool = False
+    has_diabetes: Optional[bool] = None
     family_history_diabetes: bool = False
     family_history_heart_disease: bool = False
 

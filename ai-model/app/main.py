@@ -1,24 +1,29 @@
 """FastAPI entrypoint for the AI health risk assessment service.
 
-Phase 2 (current): /api/v1/assess returns a mocked response so the backend
-team can integrate against the final contract before model training lands.
-Models are wired in during the integration phase; until then ``models_loaded``
-is False in /health.
+Loads the three trained disease pipelines at startup (fail-fast if
+artifacts are missing - run ``python -m src.train`` first), then serves
+full assessments: model probabilities -> rules engine -> tests/specialists.
 """
+
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.schemas import (
-    DISCLAIMER,
-    AssessmentRequest,
-    AssessmentResponse,
-    DiabetesRisk,
-    DiseaseRisks,
-    HeartRisk,
-    KidneyRisk,
-    OverallRisk,
-    RiskLevel,
-)
+from app.assessment import run_assessment
+from app.predictor import RiskPredictor
+from app.recommender import recommend
+from app.schemas import DISCLAIMER, AssessmentRequest, AssessmentResponse
+
+predictor: RiskPredictor
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    global predictor
+    predictor = RiskPredictor()
+    application.state.models_loaded = True
+    yield
+
 
 app = FastAPI(
     title="AI Health Risk Assessment Service",
@@ -27,44 +32,38 @@ app = FastAPI(
         "kidney disease, with test and specialist-category recommendations. "
         "Outputs are risk assessments, not medical diagnoses."
     ),
-    version="0.1.0",
+    version="0.2.0",
+    lifespan=lifespan,
 )
 
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "service": "ai-model", "models_loaded": False}
+    return {
+        "status": "ok",
+        "service": "ai-model",
+        "models_loaded": getattr(app.state, "models_loaded", False),
+    }
 
 
 @app.post("/api/v1/assess", response_model=AssessmentResponse)
 def assess(request: AssessmentRequest) -> AssessmentResponse:
-    """Return the full assessment for one patient.
-
-    Mocked with deterministic sample values until trained artifacts are
-    integrated (integration phase).
-    """
     patient = request.patient
-    _ = patient  # consumed by predictor.py once models are loaded
+    prediction = predictor.predict(patient)
+
+    result = run_assessment(
+        patient_symptoms=patient.symptoms,
+        model_probabilities=prediction["probabilities"],
+        top_factors=prediction["top_factors"],
+    )
+    tests, specialists = recommend(result["disease_risks"], patient.symptoms)
 
     return AssessmentResponse(
-        overall_risk=OverallRisk(score=0.42, level=RiskLevel.MODERATE),
-        disease_risks=DiseaseRisks(
-            diabetes=DiabetesRisk(
-                probability=0.55, level=RiskLevel.MODERATE,
-                top_factors=["fasting_glucose", "BMI"],
-            ),
-            heart=HeartRisk(
-                probability=0.28, level=RiskLevel.LOW,
-                top_factors=["age"],
-            ),
-            kidney=KidneyRisk(
-                probability=0.15, level=RiskLevel.LOW,
-                top_factors=["blood_pressure"],
-            ),
-        ),
-        risk_areas=["metabolic"],
-        recommended_tests=["Fasting Blood Sugar", "HbA1c"],
-        recommended_specialists=["General Physician"],
-        features_imputed=[],
+        overall_risk=result["overall_risk"],
+        disease_risks=result["disease_risks"],
+        risk_areas=result["risk_areas"],
+        recommended_tests=tests,
+        recommended_specialists=specialists,
+        features_imputed=prediction["features_imputed"],
         disclaimer=DISCLAIMER,
     )

@@ -81,6 +81,30 @@ Example response shape:
 The Spring Boot backend calls this service over HTTP and maps the returned
 specialist categories to actual doctors and appointment slots.
 
+## Known limitations
+
+- **Case-mix bias (kidney):** the CKD dataset oversamples diseased patients
+  (248/150), so a request with few clinical values lands near the model's
+  ~0.5 balanced prior and may band Moderate, recommending a nephrologist
+  check-up. This errs on the safe side for a screening tool but should be
+  stated in any evaluation/demo.
+- **Imputed inputs:** models were trained on complete clinical rows; requests
+  missing values are median/mode-imputed inside the pipeline. Probabilities
+  reflect "average clinic patient" for whatever was not supplied.
+  `features_imputed` reports exactly what was inferred.
+- **Probability saturation:** logistic regression outputs can approach 0/1
+  for extreme profiles (e.g., typical-angina + ST depression); levels remain
+  correct but probabilities should not be read as calibrated percentages.
+- **Lifestyle flags** (`smoker`, family history) feed the rules layer and
+  future extensions, not the current models - the source datasets contain no
+  matching columns.
+
+## Safety
+
+All outputs are screening-level risk assessments, never diagnoses. Every
+response carries an explicit disclaimer. Recommendations support - and never
+replace - qualified healthcare professionals.
+
 ## Datasets
 
 | Disease | Dataset |
