@@ -44,14 +44,57 @@ cd ai-model
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 
-# train models (after datasets are placed in data/raw/)
-python -m src.train
+# trained models are committed under artifacts/; to retrain from scratch:
+python -m src.preprocess   # rebuild splits + preprocessors (needs data/raw/)
+python -m src.train        # retrain models + metrics reports
 
 # run the service
 uvicorn app.main:app --reload --port 8000
+
+# run the test suite (19 tests)
+pytest tests/ -v
 ```
 
 Interactive API docs: http://localhost:8000/docs
+
+## Testing it (curl)
+
+```bash
+# liveness
+curl http://localhost:8000/health
+
+# full assessment
+curl -X POST http://localhost:8000/api/v1/assess \
+  -H "Content-Type: application/json" \
+  -d '{"patient": {"age": 55, "gender": "Male", "height_cm": 170,
+       "weight_kg": 95, "fasting_glucose": 190, "systolic_bp": 150,
+       "diastolic_bp": 95, "hypertension": true, "has_diabetes": true,
+       "symptoms": ["frequent_urination", "excessive_thirst"]}}'
+```
+
+Recognized symptoms (see `config/rules.yaml` for the full list):
+`frequent_urination`, `excessive_thirst`, `blurred_vision`,
+`slow_healing_wounds`, `tingling_hands_feet`, `chest_pain`,
+`shortness_of_breath`, `palpitations`, `irregular_heartbeat`,
+`dizziness_on_exertion`, `swollen_legs_or_ankles`, `foamy_urine`,
+`blood_in_urine`, `decreased_urine_output`, `persistent_itching`,
+`fatigue`, `unexplained_weight_loss`, `loss_of_appetite`, `night_sweats`,
+plus dermatological routes (`rash`, `itching`, `acne`, `skin_discoloration`,
+`hair_loss`). Unknown symptom strings are ignored safely.
+
+## Backend integration (Spring Boot)
+
+The backend only needs one call per assessment:
+
+```
+POST http://<ai-host>:8000/api/v1/assess
+Body: {"patient": { ...PatientHealthProfile fields... }}
+```
+
+Use `RestTemplate`/`WebClient`; check `/health` before calling. The response's
+`recommended_specialists` values are **categories** (e.g., `Cardiologist`) -
+map them to your doctors' specialization field, then filter by availability.
+Field-level validation errors return HTTP 422 with details.
 
 ## API contract
 
@@ -104,6 +147,23 @@ specialist categories to actual doctors and appointment slots.
 All outputs are screening-level risk assessments, never diagnoses. Every
 response carries an explicit disclaimer. Recommendations support - and never
 replace - qualified healthcare professionals.
+
+## Project status
+
+| Phase | Status |
+|---|---|
+| Scaffold + API contract | done |
+| Dataset acquisition (UCI CC BY 4.0) | done |
+| Leakage-safe preprocessing (seed 42, stratified) | done |
+| Model training & selection (LR vs RF, ROC-AUC primary) | done |
+| Rules engine (bands, overall score, tests/specialists) | done |
+| FastAPI integration + pytest suite (19 passing) | done |
+| Docker / cloud deployment | future semester work |
+| Additional diseases / symptom NLP model | future extension |
+
+Model performance summary (held-out test sets): diabetes ROC-AUC 0.82
+(Random Forest), heart 0.95 and kidney 0.98 (Logistic Regression). Full
+metrics in `artifacts/*_metrics.json`.
 
 ## Datasets
 
