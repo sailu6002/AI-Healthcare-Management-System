@@ -1,0 +1,111 @@
+# AI/ML module rule configuration
+#
+# Every threshold, weight, symptom mapping, test, and specialist in the
+# assessment pipeline is defined here so clinical logic can be tuned without
+# touching code. Probabilities are screening-level model outputs, NOT
+# diagnoses; banding language reflects that.
+
+risk_bands:
+  # p < low_max -> Low | low_max <= p < moderate_max -> Moderate | else High
+  low_max: 0.40
+  moderate_max: 0.70
+
+overall_weights:
+  # Weighted overall score = sum(weight * disease_probability) + symptom component.
+  # Weights must sum to 1.0. Heart weighted highest (acute consequences),
+  # symptoms contribute via matched-cluster ratio capped at 1.
+  # NOTE: the overall LEVEL additionally applies a dominant-risk floor -
+  # it never falls below the highest single-disease band (see assessment.py).
+  diabetes: 0.30
+  heart: 0.35
+  kidney: 0.20
+  symptom_flags: 0.15
+
+symptom_clusters:
+  # Symptoms listed by patients are grouped into clinically coherent clusters.
+  # A matched cluster adds `boost` to the linked disease probability
+  # (bounded by max_symptom_boost per disease). Clusters with no diseases
+  # still feed the symptom component of the overall score and risk areas.
+  metabolic_diabetic:
+    diseases: [diabetes]
+    boost: 0.06
+    symptoms:
+      - frequent_urination
+      - excessive_thirst
+      - unexplained_weight_loss
+      - blurred_vision
+      - slow_healing_wounds
+      - tingling_hands_feet
+  cardiac:
+    diseases: [heart]
+    boost: 0.07
+    symptoms:
+      - chest_pain
+      - shortness_of_breath
+      - palpitations
+      - irregular_heartbeat
+      - dizziness_on_exertion
+  renal:
+    diseases: [kidney]
+    boost: 0.06
+    symptoms:
+      - swollen_legs_or_ankles
+      - foamy_urine
+      - blood_in_urine
+      - decreased_urine_output
+      - persistent_itching
+  general_systemic:
+    diseases: []
+    boost: 0.0
+    symptoms:
+      - fatigue
+      - unexplained_weight_loss
+      - loss_of_appetite
+      - night_sweats
+
+max_symptom_boost: 0.15
+
+disease_rules:
+  diabetes:
+    risk_area: metabolic
+    specialist_high: Endocrinologist
+    specialist_moderate: General Physician
+    tests_by_band:
+      Moderate: [Fasting Blood Sugar (FPG), HbA1c]
+      High: [Fasting Blood Sugar (FPG), HbA1c, Oral Glucose Tolerance Test (OGTT)]
+  heart:
+    risk_area: cardiovascular
+    specialist_high: Cardiologist
+    specialist_moderate: Cardiologist
+    tests_by_band:
+      Moderate: [Lipid Profile, Resting ECG]
+      High: [Lipid Profile, Resting ECG, Echocardiogram, Stress Test (TMT)]
+  kidney:
+    risk_area: renal
+    specialist_high: Nephrologist
+    specialist_moderate: Nephrologist
+    tests_by_band:
+      Moderate: [Urinalysis, Serum Creatinine, eGFR]
+      High: [Urinalysis, Serum Creatinine, eGFR, Kidney Ultrasound]
+
+# Symptom groups routed to specialists without a matching disease-model
+# signal (e.g., skin complaints -> dermatology).
+symptom_only_routes:
+  skin:
+    risk_area: dermatological
+    symptoms: [rash, itching, acne, skin_discoloration, hair_loss]
+    specialist: Dermatologist
+
+fallback:
+  # Used when no disease reaches Moderate and no symptom route matches.
+  tests: [Routine Complete Blood Count (CBC), Basic Metabolic Panel]
+  specialist: General Physician
+  risk_area: general
+
+specialist_priority_order:
+  # Output ordering: higher-acuity specialties first; GP always last.
+  - Cardiologist
+  - Endocrinologist
+  - Nephrologist
+  - Dermatologist
+  - General Physician
