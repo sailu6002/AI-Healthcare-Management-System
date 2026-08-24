@@ -1,0 +1,35 @@
+{
+  "disease": "diabetes",
+  "features": [
+    "pregnancies",
+    "glucose",
+    "bp",
+    "skin_thickness",
+    "insulin",
+    "bmi",
+    "dpf",
+    "age"
+  ],
+  "n_features": 8,
+  "train_size": 614,
+  "test_size": 154,
+  "missing_cells_train": 501,
+  "missing_cells_test": 151,
+  "class_distribution_train": {
+    "0": 400,
+    "1": 214
+  },
+  "class_distribution_test": {
+    "0": 100,
+    "1": 54
+  },
+  "positive_rate_train": 0.3485,
+  "positive_rate_test": 0.3506,
+  "missing_per_feature_train": {
+    "glucose": 4,
+    "bp": 23,
+    "skin_thickness": 175,
+    "insulin": 290,
+    "bmi": 9
+  }
+}

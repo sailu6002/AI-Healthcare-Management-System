@@ -1,0 +1,37 @@
+{
+  "disease": "heart",
+  "features": [
+    "age",
+    "trestbps",
+    "chol",
+    "thalach",
+    "oldpeak",
+    "sex",
+    "cp",
+    "fbs",
+    "restecg",
+    "exang",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "n_features": 13,
+  "train_size": 242,
+  "test_size": 61,
+  "missing_cells_train": 2,
+  "missing_cells_test": 4,
+  "class_distribution_train": {
+    "0": 131,
+    "1": 111
+  },
+  "class_distribution_test": {
+    "0": 33,
+    "1": 28
+  },
+  "positive_rate_train": 0.4587,
+  "positive_rate_test": 0.459,
+  "missing_per_feature_train": {
+    "ca": 1,
+    "thal": 1
+  }
+}

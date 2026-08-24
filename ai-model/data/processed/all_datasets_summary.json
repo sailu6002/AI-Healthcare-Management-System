@@ -1,0 +1,116 @@
+[
+  {
+    "disease": "diabetes",
+    "features": [
+      "pregnancies",
+      "glucose",
+      "bp",
+      "skin_thickness",
+      "insulin",
+      "bmi",
+      "dpf",
+      "age"
+    ],
+    "n_features": 8,
+    "train_size": 614,
+    "test_size": 154,
+    "missing_cells_train": 501,
+    "missing_cells_test": 151,
+    "class_distribution_train": {
+      "0": 400,
+      "1": 214
+    },
+    "class_distribution_test": {
+      "0": 100,
+      "1": 54
+    },
+    "positive_rate_train": 0.3485,
+    "positive_rate_test": 0.3506,
+    "missing_per_feature_train": {
+      "glucose": 4,
+      "bp": 23,
+      "skin_thickness": 175,
+      "insulin": 290,
+      "bmi": 9
+    }
+  },
+  {
+    "disease": "heart",
+    "features": [
+      "age",
+      "trestbps",
+      "chol",
+      "thalach",
+      "oldpeak",
+      "sex",
+      "cp",
+      "fbs",
+      "restecg",
+      "exang",
+      "slope",
+      "ca",
+      "thal"
+    ],
+    "n_features": 13,
+    "train_size": 242,
+    "test_size": 61,
+    "missing_cells_train": 2,
+    "missing_cells_test": 4,
+    "class_distribution_train": {
+      "0": 131,
+      "1": 111
+    },
+    "class_distribution_test": {
+      "0": 33,
+      "1": 28
+    },
+    "positive_rate_train": 0.4587,
+    "positive_rate_test": 0.459,
+    "missing_per_feature_train": {
+      "ca": 1,
+      "thal": 1
+    }
+  },
+  {
+    "disease": "kidney",
+    "features": [
+      "age",
+      "bp",
+      "sg",
+      "al",
+      "su",
+      "bgr",
+      "bu",
+      "sc",
+      "hemo",
+      "htn",
+      "dm"
+    ],
+    "n_features": 11,
+    "train_size": 320,
+    "test_size": 80,
+    "missing_cells_train": 237,
+    "missing_cells_test": 58,
+    "class_distribution_train": {
+      "0": 122,
+      "1": 198
+    },
+    "class_distribution_test": {
+      "0": 30,
+      "1": 50
+    },
+    "positive_rate_train": 0.6188,
+    "positive_rate_test": 0.625,
+    "missing_per_feature_train": {
+      "age": 7,
+      "bp": 9,
+      "sg": 37,
+      "al": 37,
+      "su": 39,
+      "bgr": 37,
+      "bu": 15,
+      "sc": 14,
+      "hemo": 42
+    }
+  }
+]

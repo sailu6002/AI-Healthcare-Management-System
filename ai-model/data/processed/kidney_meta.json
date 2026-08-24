@@ -1,0 +1,42 @@
+{
+  "disease": "kidney",
+  "features": [
+    "age",
+    "bp",
+    "sg",
+    "al",
+    "su",
+    "bgr",
+    "bu",
+    "sc",
+    "hemo",
+    "htn",
+    "dm"
+  ],
+  "n_features": 11,
+  "train_size": 320,
+  "test_size": 80,
+  "missing_cells_train": 237,
+  "missing_cells_test": 58,
+  "class_distribution_train": {
+    "0": 122,
+    "1": 198
+  },
+  "class_distribution_test": {
+    "0": 30,
+    "1": 50
+  },
+  "positive_rate_train": 0.6188,
+  "positive_rate_test": 0.625,
+  "missing_per_feature_train": {
+    "age": 7,
+    "bp": 9,
+    "sg": 37,
+    "al": 37,
+    "su": 39,
+    "bgr": 37,
+    "bu": 15,
+    "sc": 14,
+    "hemo": 42
+  }
+}
