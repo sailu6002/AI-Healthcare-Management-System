@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environment
+venv/
+.venv/
+
+# Data: raw downloads stay local; processed CSVs are committed for reproducibility
+data/raw/*
+!data/raw/.gitkeep
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
