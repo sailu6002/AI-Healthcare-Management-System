@@ -2,6 +2,7 @@ package com.healthcare.backend.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.healthcare.backend.exception.AuthException;
 import com.healthcare.backend.model.User;
 import com.healthcare.backend.repository.UserRepository;
 
@@ -19,22 +20,34 @@ public class UserService {
     public User register(User user) {
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new AuthException("Email already registered", 409);
         }
+
+        // Public registration must never be able to choose a privileged role.
+        // Any client-supplied role (including "ADMIN") is ignored.
+        user.setRole("PATIENT");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
     }
 
+    public User getByEmail(String email) {
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new AuthException("Invalid email or password", 401));
+    }
+
+
     public User login(String email, String password) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new RuntimeException("Invalid email or password"));
+                        new AuthException("Invalid email or password", 401));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
+            throw new AuthException("Invalid email or password", 401);
         }
 
         return user;

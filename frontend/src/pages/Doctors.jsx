@@ -1,67 +1,57 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { listDoctors } from "../api/doctors";
 
-function Doctors({ onNavigate }) {
+function Doctors({ onNavigate, token }) {
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("All");
+  const [doctors, setDoctors] = useState([]);
+  const [state, setState] = useState("loading");
+  const [error, setError] = useState("");
 
-  const doctors = [
-    {
-      name: "Dr. John Smith",
-      department: "General Medicine",
-      specialization: "General Physician",
-      experience: "12 Years",
-      availability: "Available Today",
-      icon: "👨‍⚕️",
-    },
-    {
-      name: "Dr. Emily Johnson",
-      department: "Dermatology",
-      specialization: "Skin Specialist",
-      experience: "9 Years",
-      availability: "Available Today",
-      icon: "👩‍⚕️",
-    },
-    {
-      name: "Dr. Michael Brown",
-      department: "Cardiology",
-      specialization: "Heart Specialist",
-      experience: "15 Years",
-      availability: "Available Tomorrow",
-      icon: "👨‍⚕️",
-    },
-    {
-      name: "Dr. Sarah Wilson",
-      department: "Neurology",
-      specialization: "Neurologist",
-      experience: "10 Years",
-      availability: "Available Today",
-      icon: "👩‍⚕️",
-    },
-    {
-      name: "Dr. David Miller",
-      department: "Orthopedics",
-      specialization: "Orthopedic Specialist",
-      experience: "11 Years",
-      availability: "Available Tomorrow",
-      icon: "👨‍⚕️",
-    },
-    {
-      name: "Dr. Jessica Taylor",
-      department: "General Medicine",
-      specialization: "General Physician",
-      experience: "8 Years",
-      availability: "Available Today",
-      icon: "👩‍⚕️",
-    },
-  ];
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setState("loading");
+      setError("");
+      try {
+        const data = await listDoctors(token);
+        if (!cancelled) {
+          setDoctors(Array.isArray(data) ? data : []);
+          setState("ready");
+        }
+      } catch (requestError) {
+        if (!cancelled) {
+          setError(requestError.message || "Unable to load doctors.");
+          setState("error");
+        }
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  const departments = useMemo(() => {
+    const set = new Set(
+      doctors
+        .map((doctor) => (doctor.specialization || "").trim())
+        .filter(Boolean)
+    );
+    return Array.from(set).sort();
+  }, [doctors]);
 
   const filteredDoctors = doctors.filter((doctor) => {
+    const term = search.trim().toLowerCase();
     const matchesSearch =
-      doctor.name.toLowerCase().includes(search.toLowerCase()) ||
-      doctor.specialization.toLowerCase().includes(search.toLowerCase());
+      !term ||
+      (doctor.fullName || "").toLowerCase().includes(term) ||
+      (doctor.specialization || "").toLowerCase().includes(term);
 
     const matchesDepartment =
-      department === "All" || doctor.department === department;
+      department === "All" || doctor.specialization === department;
 
     return matchesSearch && matchesDepartment;
   });
@@ -69,9 +59,7 @@ function Doctors({ onNavigate }) {
   return (
     <div className="doctors-page">
 
-      {/* Header */}
       <div className="doctors-header">
-
         <div>
           <button
             className="back-button"
@@ -83,116 +71,115 @@ function Doctors({ onNavigate }) {
           <h1>Doctors</h1>
           <p>Find and connect with healthcare professionals</p>
         </div>
-
       </div>
 
-      {/* Search and Filter */}
       <div className="doctor-search-section">
 
         <div className="doctor-search-box">
           <span>🔍</span>
-
           <input
             type="text"
             placeholder="Search doctor or specialization..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
           />
         </div>
 
         <select
           className="doctor-filter"
           value={department}
-          onChange={(e) => setDepartment(e.target.value)}
+          onChange={(event) => setDepartment(event.target.value)}
         >
-          <option value="All">All Departments</option>
-          <option value="General Medicine">General Medicine</option>
-          <option value="Cardiology">Cardiology</option>
-          <option value="Dermatology">Dermatology</option>
-          <option value="Neurology">Neurology</option>
-          <option value="Orthopedics">Orthopedics</option>
+          <option value="All">All Specializations</option>
+          {departments.map((specialization) => (
+            <option key={specialization} value={specialization}>
+              {specialization}
+            </option>
+          ))}
         </select>
 
       </div>
 
-      {/* Doctor Count */}
-      <div className="doctor-results">
-        <h2>Available Doctors</h2>
-        <span>{filteredDoctors.length} doctors found</span>
-      </div>
+      {state === "loading" && (
+        <p style={{ color: "#6b7280" }}>Loading doctors…</p>
+      )}
 
-      {/* Doctors Grid */}
-      <div className="doctors-grid">
+      {state === "error" && (
+        <div
+          style={{
+            background: "#fef2f2",
+            border: "1px solid #fecaca",
+            color: "#b91c1c",
+            borderRadius: "8px",
+            padding: "12px 16px",
+            fontSize: "14px",
+          }}
+        >
+          {error}
+        </div>
+      )}
 
-        {filteredDoctors.length > 0 ? (
-
-          filteredDoctors.map((doctor, index) => (
-
-            <div className="doctor-card" key={index}>
-
-              <div className="doctor-card-top">
-
-                <div className="doctor-avatar">
-                  {doctor.icon}
-                </div>
-
-                <span className="doctor-status">
-                  ● Available
-                </span>
-
-              </div>
-
-              <div className="doctor-card-info">
-
-                <h3>{doctor.name}</h3>
-
-                <p className="doctor-specialization">
-                  {doctor.specialization}
-                </p>
-
-                <p className="doctor-department">
-                  🏥 {doctor.department}
-                </p>
-
-                <p className="doctor-experience">
-                  ⭐ {doctor.experience} experience
-                </p>
-
-              </div>
-
-              <div className="doctor-availability">
-                <span>📅</span>
-                {doctor.availability}
-              </div>
-
-              <button
-                className="doctor-book-button"
-                onClick={() => onNavigate("appointments")}
-              >
-                Book Appointment
-              </button>
-
-            </div>
-
-          ))
-
-        ) : (
-
-          <div className="no-doctors">
-
-            <div>🔍</div>
-
-            <h3>No doctors found</h3>
-
-            <p>
-              Try changing your search or department filter.
-            </p>
-
+      {state === "ready" && (
+        <>
+          <div className="doctor-results">
+            <h2>Available Doctors</h2>
+            <span>{filteredDoctors.length} doctors found</span>
           </div>
 
-        )}
+          <div className="doctors-grid">
+            {filteredDoctors.length > 0 ? (
+              filteredDoctors.map((doctor) => (
+                <div className="doctor-card" key={doctor.doctorId}>
+                  <div className="doctor-card-top">
+                    <div className="doctor-avatar">🩺</div>
+                  </div>
 
-      </div>
+                  <div className="doctor-card-info">
+                    <h3>{doctor.fullName}</h3>
+
+                    {doctor.specialization && (
+                      <p className="doctor-specialization">
+                        {doctor.specialization}
+                      </p>
+                    )}
+
+                    {doctor.address && (
+                      <p className="doctor-department">🏥 {doctor.address}</p>
+                    )}
+
+                    {doctor.experience != null && (
+                      <p className="doctor-experience">
+                        ⭐ {doctor.experience} years experience
+                      </p>
+                    )}
+
+                    {doctor.phone && (
+                      <p className="doctor-department">📞 {doctor.phone}</p>
+                    )}
+                  </div>
+
+                  <button
+                    className="doctor-book-button"
+                    onClick={() =>
+                      onNavigate("appointments", {
+                        doctorId: doctor.doctorId,
+                      })
+                    }
+                  >
+                    Book Appointment
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="no-doctors">
+                <div>🔍</div>
+                <h3>No doctors found</h3>
+                <p>Try changing your search or specialization filter.</p>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
     </div>
   );

@@ -1,5 +1,6 @@
 package com.healthcare.backend.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AiAssessmentRequest {
@@ -45,7 +46,10 @@ public class AiAssessmentRequest {
         private Boolean has_diabetes;
         private boolean family_history_diabetes;
         private boolean family_history_heart_disease;
-        private List<String> symptoms;
+        // Defaults to an empty list so it is never serialized as null; the AI
+        // service rejects a null list (its schema is list[str], not optional),
+        // which used to turn a missing-symptoms assessment into a 502.
+        private List<String> symptoms = new ArrayList<>();
 
         public PatientHealthProfile() {
         }

@@ -49,6 +49,13 @@ HEART_CATEGORICAL = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "tha
 KIDNEY_NUMERIC = ["age", "bp", "sg", "al", "su", "bgr", "bu", "sc", "hemo"]
 KIDNEY_CATEGORICAL = ["htn", "dm"]
 
+# Verified raw column order of the UCI Cleveland heart CSV (no header row).
+# The file is in the dataset's documented order; reading it with any other
+# order silently mislabels clinical measurements and corrupts inference.
+HEART_COLUMNS = ["age", "sex", "cp", "trestbps", "chol", "fbs",
+                 "restecg", "thalach", "exang", "oldpeak", "slope",
+                 "ca", "thal", "num"]
+
 FEATURE_SPECS = {
     "diabetes": {"numeric": DIABETES_NUMERIC, "categorical": [], "target": "outcome"},
     "heart": {"numeric": HEART_NUMERIC, "categorical": HEART_CATEGORICAL, "target": "target"},
@@ -67,11 +74,18 @@ def load_diabetes() -> pd.DataFrame:
 
 
 def load_heart() -> pd.DataFrame:
-    """UCI Cleveland heart. Multi-class severity collapsed to binary."""
-    cols = HEART_NUMERIC + HEART_CATEGORICAL + ["num"]
-    df = pd.read_csv(RAW_DIR / "cleveland_heart.csv", names=cols, na_values="?")
+    """UCI Cleveland heart. Multi-class severity collapsed to binary.
+
+    The CSV has no header, so its columns MUST be read in the dataset's
+    documented order (``HEART_COLUMNS``). The previous implementation used a
+    different order, which relabelled every clinical measurement (e.g. real
+    ``trestbps`` was stored under ``thalach``) and made inference meaningless.
+    Feature columns are returned in the pipeline's canonical order.
+    """
+    df = pd.read_csv(
+        RAW_DIR / "cleveland_heart.csv", names=HEART_COLUMNS, na_values="?")
     df["target"] = (df.pop("num") > 0).astype(int)
-    return df
+    return df[HEART_NUMERIC + HEART_CATEGORICAL + ["target"]]
 
 
 def load_kidney() -> pd.DataFrame:
@@ -139,13 +153,22 @@ def validate_split(name: str, X_train, y_train, X_test, y_test, spec) -> dict:
     }
 
 
-def main():
+DISEASE_LOADERS = {"diabetes": load_diabetes, "heart": load_heart, "kidney": load_kidney}
+
+
+def main(diseases=None):
+    """Rebuild splits + preprocessors for ``diseases`` (default: all).
+
+    Passing a subset regenerates ONLY those artifacts, leaving the other
+    diseases' processed data and preprocessors untouched.
+    """
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
-    loaders = {"diabetes": load_diabetes, "heart": load_heart, "kidney": load_kidney}
+    selected = list(DISEASE_LOADERS) if diseases is None else list(diseases)
     summaries = []
 
-    for name, loader in loaders.items():
+    for name in selected:
+        loader = DISEASE_LOADERS[name]
         spec = FEATURE_SPECS[name]
         df = loader()
         X, y = df.drop(columns=["target"]), df["target"]
@@ -171,9 +194,25 @@ def main():
               f"missing(train)={summary['missing_cells_train']} "
               f"saved: {name}_train.csv, {name}_test.csv, {name}_preprocessor.joblib")
 
-    with open(PROCESSED_DIR / "all_datasets_summary.json", "w") as fh:
-        json.dump(summaries, fh, indent=2)
+    # Merge into the combined summary so partial runs never drop other diseases.
+    summary_path = PROCESSED_DIR / "all_datasets_summary.json"
+    existing = {}
+    if summary_path.exists():
+        for entry in json.loads(summary_path.read_text()):
+            existing[entry["disease"]] = entry
+    for summary in summaries:
+        existing[summary["disease"]] = summary
+    with open(summary_path, "w") as fh:
+        json.dump([existing[name] for name in DISEASE_LOADERS if name in existing],
+                  fh, indent=2)
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Rebuild dataset splits and preprocessors.")
+    parser.add_argument("diseases", nargs="*", choices=list(DISEASE_LOADERS),
+                        help="Diseases to rebuild (default: all).")
+    args = parser.parse_args()
+    main(args.diseases or None)
