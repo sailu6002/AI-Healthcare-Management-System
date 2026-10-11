@@ -71,10 +71,17 @@ def evaluate(name, pipeline, X_train, y_train, X_test, y_test) -> dict:
     }
 
 
-def main():
-    report_all = {}
+def main(diseases=None):
+    """Train/select models for ``diseases`` (default: all).
 
-    for disease, spec in FEATURE_SPECS.items():
+    Passing a subset retrains ONLY those models, leaving the other diseases'
+    model and metrics artifacts untouched.
+    """
+    report_all = {}
+    selected = list(FEATURE_SPECS) if diseases is None else list(diseases)
+
+    for disease in selected:
+        spec = FEATURE_SPECS[disease]
         train = pd.read_csv(PROCESSED_DIR / f"{disease}_train.csv")
         test = pd.read_csv(PROCESSED_DIR / f"{disease}_test.csv")
         X_train, y_train = train.drop(columns=["target"]), train["target"]
@@ -117,4 +124,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Train and select risk models.")
+    parser.add_argument("diseases", nargs="*", choices=list(FEATURE_SPECS),
+                        help="Diseases to retrain (default: all).")
+    args = parser.parse_args()
+    main(args.diseases or None)

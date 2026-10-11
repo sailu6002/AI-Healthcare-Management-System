@@ -62,12 +62,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SimpleGrantedAuthority authority =
                             new SimpleGrantedAuthority("ROLE_" + role);
 
-                    // DEBUG INFORMATION
-                    System.out.println("JWT EMAIL: " + email);
-                    System.out.println("JWT ROLE: " + role);
-                    System.out.println(
-                            "SPRING AUTHORITY: " + authority.getAuthority());
-
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
                                     email,
@@ -86,10 +80,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             } catch (Exception e) {
 
-                System.out.println(
-                        "JWT Authentication Error: " + e.getMessage());
-
-                // Invalid token → continue without authentication
+                // Invalid/expired token → continue without authentication so
+                // the request is rejected as 401 by the security chain.
             }
         }
 

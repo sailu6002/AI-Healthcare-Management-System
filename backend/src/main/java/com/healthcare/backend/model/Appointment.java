@@ -1,4 +1,7 @@
 package com.healthcare.backend.model;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -11,8 +14,16 @@ public class Appointment {
 
     private Long patientId;
     private Long doctorId;
-    private String appointmentDate;
-    private String appointmentTime;
+
+    // These map to the real SQL DATE / TIME columns created by the explicit
+    // Phase 4.2 migration (database/migrations/phase4_2_appointment_safety.sql).
+    @Column(name = "appointment_date", nullable = false)
+    private LocalDate appointmentDate;
+
+    @Column(name = "appointment_time", nullable = false)
+    private LocalTime appointmentTime;
+
+    @Column(nullable = false, length = 20)
     private String status;
 
     public Appointment() {
@@ -42,19 +53,19 @@ public class Appointment {
         this.doctorId = doctorId;
     }
 
-    public String getAppointmentDate() {
+    public LocalDate getAppointmentDate() {
         return appointmentDate;
     }
 
-    public void setAppointmentDate(String appointmentDate) {
+    public void setAppointmentDate(LocalDate appointmentDate) {
         this.appointmentDate = appointmentDate;
     }
 
-    public String getAppointmentTime() {
+    public LocalTime getAppointmentTime() {
         return appointmentTime;
     }
 
-    public void setAppointmentTime(String appointmentTime) {
+    public void setAppointmentTime(LocalTime appointmentTime) {
         this.appointmentTime = appointmentTime;
     }
 

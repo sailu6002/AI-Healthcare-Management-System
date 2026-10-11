@@ -1,4 +1,5 @@
 package com.healthcare.backend.model;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +13,11 @@ public class Patient {
      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long patientId;
+
+    // Optional link to the login account. Nullable and unique; enforced in the
+    // database by the Phase 4.2 migration (fk_patients_user / uq_patients_user).
+    @Column(name = "user_id")
+    private Long userId;
 
     private String fullName;
     private int age;
@@ -29,6 +35,14 @@ public class Patient {
 
     public void setPatientId(Long patientId) {
         this.patientId = patientId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getFullName() {

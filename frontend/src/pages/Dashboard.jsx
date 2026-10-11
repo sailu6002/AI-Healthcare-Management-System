@@ -1,4 +1,38 @@
-function Dashboard({ onNavigate }) {
+import { useEffect, useState } from "react";
+import { getMyAppointments } from "../api/appointments";
+
+function Dashboard({ onNavigate, token, fullName }) {
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentsLoaded, setAppointmentsLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const data = await getMyAppointments(token);
+        if (!cancelled) {
+          setAppointments(Array.isArray(data) ? data : []);
+        }
+      } catch {
+        // A missing profile simply means no appointments yet.
+      } finally {
+        if (!cancelled) {
+          setAppointmentsLoaded(true);
+        }
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  const upcoming = appointments.filter(
+    (appointment) => appointment.status === "BOOKED"
+  );
+
   return (
     <div className="dashboard-layout">
 
@@ -127,7 +161,7 @@ function Dashboard({ onNavigate }) {
             </div>
 
             <div>
-              <strong>Patient</strong>
+              <strong>{fullName || "Patient"}</strong>
               <small>Patient Account</small>
             </div>
 
@@ -140,7 +174,7 @@ function Dashboard({ onNavigate }) {
         <section className="welcome-section">
 
           <h2>
-            Good Morning, Patient! 👋
+            Good Morning, {fullName || "Patient"}! 👋
           </h2>
 
           <p>
@@ -161,7 +195,9 @@ function Dashboard({ onNavigate }) {
 
             <div>
               <h3>Appointments</h3>
-              <p className="card-number">2</p>
+              <p className="card-number">
+                {appointmentsLoaded ? upcoming.length : "…"}
+              </p>
               <span>Upcoming appointments</span>
             </div>
 
@@ -238,7 +274,10 @@ function Dashboard({ onNavigate }) {
           </div>
 
 
-          <button className="ai-button">
+          <button
+            className="ai-button"
+            onClick={() => onNavigate("assistant")}
+          >
             Open Assistant
           </button>
 
@@ -259,73 +298,35 @@ function Dashboard({ onNavigate }) {
           </div>
 
 
-          <div className="activity">
+          {appointments.length === 0 ? (
+            <p style={{ color: "#6b7280", fontSize: "14px" }}>
+              No appointments yet. Book one from the Appointments page.
+            </p>
+          ) : (
+            appointments.slice(0, 5).map((appointment) => (
+              <div className="activity" key={appointment.appointmentId}>
+                <div className="activity-icon">🩺</div>
 
-            <div className="activity-icon">
-              🩺
-            </div>
+                <div className="activity-details">
 
-            <div className="activity-details">
+                  <h4>
+                    {appointment.doctorName || "Appointment"}
+                  </h4>
 
-              <h4>Doctor Consultation</h4>
+                  <p>
+                    {appointment.specialization || "Consultation"} —{" "}
+                    {appointment.status}
+                  </p>
 
-              <p>
-                General consultation completed
-              </p>
+                </div>
 
-            </div>
+                <span className="activity-date">
+                  {appointment.appointmentDate}
+                </span>
 
-            <span className="activity-date">
-              15 Aug 2026
-            </span>
-
-          </div>
-
-
-          <div className="activity">
-
-            <div className="activity-icon">
-              🧪
-            </div>
-
-            <div className="activity-details">
-
-              <h4>Blood Test Report</h4>
-
-              <p>
-                New blood test report uploaded
-              </p>
-
-            </div>
-
-            <span className="activity-date">
-              12 Aug 2026
-            </span>
-
-          </div>
-
-
-          <div className="activity">
-
-            <div className="activity-icon">
-              💊
-            </div>
-
-            <div className="activity-details">
-
-              <h4>Prescription Updated</h4>
-
-              <p>
-                Prescription has been updated
-              </p>
-
-            </div>
-
-            <span className="activity-date">
-              10 Aug 2026
-            </span>
-
-          </div>
+              </div>
+            ))
+          )}
 
         </section>
 

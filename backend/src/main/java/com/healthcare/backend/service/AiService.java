@@ -6,23 +6,35 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthcare.backend.dto.AiAssessmentRequest;
+import com.healthcare.backend.exception.AiServiceException;
 
 @Service
 public class AiService {
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
+    private final String baseUrl;
+    private final Duration requestTimeout;
 
-    public AiService() {
+    public AiService(
+            @Value("${ai.service.base-url:http://127.0.0.1:8000}") String baseUrl,
+            @Value("${ai.service.connect-timeout-ms:3000}") long connectTimeoutMs,
+            @Value("${ai.service.request-timeout-ms:15000}") long requestTimeoutMs) {
+
+        this.baseUrl = baseUrl.replaceAll("/+$", "");
+        this.requestTimeout = Duration.ofMillis(requestTimeoutMs);
 
         this.httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofMillis(connectTimeoutMs))
                 .build();
 
         this.objectMapper = new ObjectMapper();
@@ -33,8 +45,9 @@ public class AiService {
         try {
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://127.0.0.1:8000/health"))
+                    .uri(URI.create(baseUrl + "/health"))
                     .version(HttpClient.Version.HTTP_1_1)
+                    .timeout(requestTimeout)
                     .GET()
                     .build();
 
@@ -48,8 +61,9 @@ public class AiService {
 
         } catch (IOException e) {
 
-            throw new RuntimeException(
+            throw new AiServiceException(
                     "Failed to connect to AI service",
+                    true,
                     e
             );
 
@@ -57,8 +71,9 @@ public class AiService {
 
             Thread.currentThread().interrupt();
 
-            throw new RuntimeException(
+            throw new AiServiceException(
                     "AI health request was interrupted",
+                    true,
                     e
             );
         }
@@ -72,17 +87,11 @@ public class AiService {
             String jsonBody =
                     objectMapper.writeValueAsString(request);
 
-            // Debug: print the JSON being sent
-            System.out.println("AI REQUEST BODY:");
-            System.out.println(jsonBody);
-
-            // Create HTTP request
             HttpRequest httpRequest =
                     HttpRequest.newBuilder()
-                            .uri(URI.create(
-                                    "http://127.0.0.1:8000/api/v1/assess"
-                            ))
+                            .uri(URI.create(baseUrl + "/api/v1/assess"))
                             .version(HttpClient.Version.HTTP_1_1)
+                            .timeout(requestTimeout)
                             .header(
                                     "Content-Type",
                                     "application/json; charset=UTF-8"
@@ -99,33 +108,19 @@ public class AiService {
                             )
                             .build();
 
-            System.out.println("SENDING REQUEST TO AI...");
-
-            // Send request to FastAPI
             HttpResponse<String> response =
                     httpClient.send(
                             httpRequest,
                             HttpResponse.BodyHandlers.ofString()
                     );
 
-            // Print AI response status
-            System.out.println(
-                    "AI RESPONSE STATUS: "
-                            + response.statusCode()
-            );
-
-            // Print AI response
-            System.out.println("AI RESPONSE BODY:");
-            System.out.println(response.body());
-
             // Handle error response
             if (response.statusCode() >= 400) {
 
-                throw new RuntimeException(
+                throw new AiServiceException(
                         "AI service returned HTTP "
-                                + response.statusCode()
-                                + ": "
-                                + response.body()
+                                + response.statusCode(),
+                        false
                 );
             }
 
@@ -134,15 +129,17 @@ public class AiService {
 
         } catch (JsonProcessingException e) {
 
-            throw new RuntimeException(
+            throw new AiServiceException(
                     "Failed to convert AI request to JSON",
+                    false,
                     e
             );
 
         } catch (IOException e) {
 
-            throw new RuntimeException(
+            throw new AiServiceException(
                     "Failed to connect to AI service",
+                    true,
                     e
             );
 
@@ -150,8 +147,9 @@ public class AiService {
 
             Thread.currentThread().interrupt();
 
-            throw new RuntimeException(
+            throw new AiServiceException(
                     "AI request was interrupted",
+                    true,
                     e
             );
         }

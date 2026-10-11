@@ -5,18 +5,18 @@
   "candidates": [
     {
       "model": "logistic_regression",
-      "accuracy": 0.8852,
-      "precision": 0.8182,
-      "recall": 0.9643,
-      "f1": 0.8852,
-      "roc_auc": 0.9513,
-      "cv_roc_auc_train_mean": 0.8891,
-      "cv_roc_auc_train_std": 0.0503,
+      "accuracy": 0.8689,
+      "precision": 0.8125,
+      "recall": 0.9286,
+      "f1": 0.8667,
+      "roc_auc": 0.9665,
+      "cv_roc_auc_train_mean": 0.8927,
+      "cv_roc_auc_train_std": 0.0436,
       "confusion_matrix": {
         "tn": 27,
         "fp": 6,
-        "fn": 1,
-        "tp": 27
+        "fn": 2,
+        "tp": 26
       }
     },
     {
@@ -25,9 +25,9 @@
       "precision": 0.8182,
       "recall": 0.9643,
       "f1": 0.8852,
-      "roc_auc": 0.9437,
-      "cv_roc_auc_train_mean": 0.9024,
-      "cv_roc_auc_train_std": 0.0392,
+      "roc_auc": 0.9513,
+      "cv_roc_auc_train_mean": 0.9036,
+      "cv_roc_auc_train_std": 0.0393,
       "confusion_matrix": {
         "tn": 27,
         "fp": 6,
