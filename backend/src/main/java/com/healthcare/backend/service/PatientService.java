@@ -17,14 +17,43 @@ public class PatientService {
         this.patientRepository = patientRepository;
     }
 
-    // Create patient
+    // Create patient without duplicates
     public Patient createPatient(Patient patient) {
+        if (patient.getEmail() != null && !patient.getEmail().trim().isEmpty()) {
+            Optional<Patient> byEmail = patientRepository.findByEmail(patient.getEmail().trim());
+            if (byEmail.isPresent()) {
+                return byEmail.get();
+            }
+        }
+
+        if (patient.getPhone() != null && !patient.getPhone().trim().isEmpty()) {
+            Optional<Patient> byPhone = patientRepository.findByPhone(patient.getPhone().trim());
+            if (byPhone.isPresent()) {
+                return byPhone.get();
+            }
+        }
+
+        if (patient.getFullName() != null && !patient.getFullName().trim().isEmpty()) {
+            Optional<Patient> byName = patientRepository.findByFullNameIgnoreCase(patient.getFullName().trim());
+            if (byName.isPresent()) {
+                return byName.get();
+            }
+        }
+
         return patientRepository.save(patient);
     }
 
     // Get all patients
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
+    }
+
+    // Get patient by email
+    public Optional<Patient> getPatientByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return Optional.empty();
+        }
+        return patientRepository.findByEmail(email.trim());
     }
 
     // Get patient by ID

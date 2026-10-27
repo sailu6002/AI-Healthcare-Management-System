@@ -15,8 +15,8 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    @Value("${jwt.secret:KjZ2OEKC2+yYpmgueJ0ABBhpS8wMgiVAxjQUFQCG3iPVHRQ59AJjXBU+t6N9UDSwNBENjGiP/PmPqpYlns99tw==}")
+    private String secretKey = "KjZ2OEKC2+yYpmgueJ0ABBhpS8wMgiVAxjQUFQCG3iPVHRQ59AJjXBU+t6N9UDSwNBENjGiP/PmPqpYlns99tw==";
 
     // Create secret key
     private SecretKey getSignInKey() {

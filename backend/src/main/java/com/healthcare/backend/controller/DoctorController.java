@@ -1,4 +1,5 @@
 package com.healthcare.backend.controller;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,48 +25,52 @@ public class DoctorController {
         this.doctorService = doctorService;
     }
 
+    // Get all available clinical departments / specializations
+    @GetMapping({"/specializations", "/departments"})
+    public ResponseEntity<List<String>> getSpecializations() {
+        return ResponseEntity.ok(doctorService.getSpecializations());
+    }
+
+    // Get doctors filtered by specialization (or all doctors if not specified)
+    @GetMapping(value = {"/specialization", "/specialization/{specialization}", "/department/{specialization}"})
+    public ResponseEntity<List<Doctor>> getDoctorsBySpecialization(@PathVariable(required = false) String specialization) {
+        return ResponseEntity.ok(doctorService.getDoctorsBySpecialization(specialization));
+    }
+
     // Create doctor
     @PostMapping
-    public Doctor createDoctor(@RequestBody Doctor doctor) {
-        return doctorService.createDoctor(doctor);
+    public ResponseEntity<Doctor> createDoctor(@RequestBody Doctor doctor) {
+        return ResponseEntity.ok(doctorService.createDoctor(doctor));
     }
 
     // Get all doctors
     @GetMapping
-    public List<Doctor> getAllDoctors() {
-        return doctorService.getAllDoctors();
+    public ResponseEntity<List<Doctor>> getAllDoctors() {
+        return ResponseEntity.ok(doctorService.getAllDoctors());
     }
 
-    // Get doctor by ID
-    @GetMapping("/{id}")
+    // Get doctor by ID (explicit numeric path variable to avoid collision with sub-routes)
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<Doctor> getDoctorById(@PathVariable Long id) {
-
         Optional<Doctor> doctor = doctorService.getDoctorById(id);
-
         return doctor.map(ResponseEntity::ok)
                      .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Update doctor
-    @PutMapping("/{id}")
+    @PutMapping("/{id:\\d+}")
     public ResponseEntity<Doctor> updateDoctor(
             @PathVariable Long id,
             @RequestBody Doctor doctorDetails) {
-
-        Optional<Doctor> updatedDoctor =
-                doctorService.updateDoctor(id, doctorDetails);
-
+        Optional<Doctor> updatedDoctor = doctorService.updateDoctor(id, doctorDetails);
         return updatedDoctor.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Delete doctor
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<Void> deleteDoctor(@PathVariable Long id) {
-
         doctorService.deleteDoctor(id);
-
         return ResponseEntity.noContent().build();
     }
-    
 }

@@ -38,6 +38,14 @@ public class PatientController {
         return ResponseEntity.ok(patientService.getAllPatients());
     }
 
+    // Get patient by email
+    @GetMapping("/by-email/{email}")
+    public ResponseEntity<Patient> getPatientByEmail(@PathVariable String email) {
+        return patientService.getPatientByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // Get patient by ID
     @GetMapping("/{id}")
     public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {

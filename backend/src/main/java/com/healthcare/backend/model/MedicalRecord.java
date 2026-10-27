@@ -1,4 +1,5 @@
 package com.healthcare.backend.model;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,7 +9,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "medical_records")
 public class MedicalRecord {
-     @Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recordId;
 
@@ -17,13 +19,17 @@ public class MedicalRecord {
     private Long appointmentId;
 
     private String diagnosis;
+    private String symptoms;
+    private String treatment;
     private String prescription;
     private String testResults;
     private String visitDate;
 
+    // Default constructor
     public MedicalRecord() {
     }
 
+    // Record ID
     public Long getRecordId() {
         return recordId;
     }
@@ -32,6 +38,7 @@ public class MedicalRecord {
         this.recordId = recordId;
     }
 
+    // Patient ID
     public Long getPatientId() {
         return patientId;
     }
@@ -40,6 +47,7 @@ public class MedicalRecord {
         this.patientId = patientId;
     }
 
+    // Doctor ID
     public Long getDoctorId() {
         return doctorId;
     }
@@ -48,6 +56,7 @@ public class MedicalRecord {
         this.doctorId = doctorId;
     }
 
+    // Appointment ID
     public Long getAppointmentId() {
         return appointmentId;
     }
@@ -56,6 +65,7 @@ public class MedicalRecord {
         this.appointmentId = appointmentId;
     }
 
+    // Diagnosis
     public String getDiagnosis() {
         return diagnosis;
     }
@@ -64,6 +74,25 @@ public class MedicalRecord {
         this.diagnosis = diagnosis;
     }
 
+    // Symptoms
+    public String getSymptoms() {
+        return symptoms;
+    }
+
+    public void setSymptoms(String symptoms) {
+        this.symptoms = symptoms;
+    }
+
+    // Treatment
+    public String getTreatment() {
+        return treatment;
+    }
+
+    public void setTreatment(String treatment) {
+        this.treatment = treatment;
+    }
+
+    // Prescription
     public String getPrescription() {
         return prescription;
     }
@@ -72,6 +101,7 @@ public class MedicalRecord {
         this.prescription = prescription;
     }
 
+    // Test Results
     public String getTestResults() {
         return testResults;
     }
@@ -80,6 +110,7 @@ public class MedicalRecord {
         this.testResults = testResults;
     }
 
+    // Visit Date
     public String getVisitDate() {
         return visitDate;
     }
@@ -87,5 +118,4 @@ public class MedicalRecord {
     public void setVisitDate(String visitDate) {
         this.visitDate = visitDate;
     }
-    
 }

@@ -1484,3 +1484,752 @@
     gap: 12px;
   }
 }
+.inline-prescription-details {
+  padding: 16px 28px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.inline-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  white-space: nowrap;
+}
+
+.inline-detail-row > span {
+  width: 24px;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.inline-detail-row strong {
+  white-space: nowrap;
+}
+
+.inline-detail-row p {
+  margin: 0;
+  color: #555;
+  white-space: nowrap;
+}
+
+.inline-status {
+  color: #16a34a !important;
+  font-weight: 600;
+}
+/* =====================================
+   INLINE PRESCRIPTION DETAILS
+   ===================================== */
+
+.inline-prescription-details {
+  padding: 16px 28px 22px;
+  border-top: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.inline-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  white-space: nowrap;
+}
+
+.inline-detail-row > span {
+  width: 24px;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.inline-detail-row strong {
+  white-space: nowrap;
+}
+
+.inline-detail-row p {
+  margin: 0;
+  color: #555;
+  white-space: nowrap;
+}
+
+.inline-status {
+  color: #16a34a !important;
+  font-weight: 600;
+}
+
+/* =====================================
+   EDIT BUTTON
+   ===================================== */
+
+.edit-prescription-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.edit-prescription-button {
+  border: 1px solid #2563eb;
+  background: white;
+  color: #2563eb;
+
+  padding: 9px 20px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.edit-prescription-button:hover {
+  background: #eff6ff;
+}
+
+/* =====================================
+   EDIT FORM
+   ===================================== */
+
+.prescription-edit-form {
+  padding-top: 4px;
+}
+
+.prescription-edit-form h3 {
+  margin: 0 0 20px;
+  font-size: 20px;
+  color: #111827;
+}
+
+.edit-field {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  margin-bottom: 14px;
+}
+
+.edit-field label {
+  width: 110px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #374151;
+}
+
+.edit-field input,
+.edit-field select {
+  flex: 1;
+
+  padding: 10px 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+
+  font-size: 14px;
+
+  outline: none;
+
+  background: white;
+}
+
+.edit-field input:focus,
+.edit-field select:focus {
+  border-color: #2563eb;
+}
+
+/* =====================================
+   SAVE / CANCEL
+   ===================================== */
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.save-prescription-button {
+  border: none;
+
+  background: #2563eb;
+  color: white;
+
+  padding: 10px 20px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.save-prescription-button:hover {
+  background: #1d4ed8;
+}
+
+.save-prescription-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel-edit-button {
+  border: 1px solid #d1d5db;
+
+  background: white;
+  color: #374151;
+
+  padding: 10px 20px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.cancel-edit-button:hover {
+  background: #f3f4f6;
+}
+
+.cancel-edit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.view-prescription-button {
+  cursor: pointer;
+}
+/* =========================================
+   NEW PRESCRIPTION FORM
+========================================= */
+
+.new-prescription-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.new-prescription-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.new-prescription-header h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: #1f2937;
+}
+
+.new-prescription-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.close-add-button {
+  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.close-add-button:hover {
+  background: #e5e7eb;
+}
+
+.new-prescription-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.add-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.add-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.add-field input,
+.add-field select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #ffffff;
+}
+
+.add-field input:focus,
+.add-field select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.new-prescription-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* =========================================
+   PRESCRIPTION ACTION BUTTONS
+========================================= */
+
+.prescription-action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.delete-prescription-button {
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.delete-prescription-button:hover {
+  background: #fecaca;
+}
+
+.delete-prescription-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 768px) {
+
+  .new-prescription-form {
+    grid-template-columns: 1fr;
+  }
+
+  .new-prescription-actions {
+    grid-column: auto;
+    flex-direction: column;
+  }
+
+  .prescription-action-buttons {
+    flex-direction: column;
+  }
+
+}
+/* =========================================
+   MEDICAL RECORD DETAILS MODAL
+========================================= */
+
+.medical-record-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.medical-record-modal {
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.medical-record-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 28px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.medical-record-modal-header h2 {
+  margin: 0 0 5px;
+  color: #1f2937;
+  font-size: 22px;
+}
+
+.medical-record-modal-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.close-medical-record-modal {
+  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.close-medical-record-modal:hover {
+  background: #e5e7eb;
+}
+
+.medical-record-modal-body {
+  padding: 24px 28px;
+  display: grid;
+  gap: 18px;
+}
+
+.modal-detail-item {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 10px;
+}
+
+.modal-detail-item > span {
+  font-size: 22px;
+}
+
+.modal-detail-item strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #374151;
+  font-size: 14px;
+}
+
+.modal-detail-item p {
+  margin: 0;
+  color: #1f2937;
+  font-size: 15px;
+}
+
+.modal-detail-item small {
+  display: block;
+  margin-top: 4px;
+  color: #6b7280;
+}
+
+.medical-record-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 18px 28px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+/* =========================================
+   PRINT MEDICAL RECORD
+========================================= */
+
+@media print {
+
+  body * {
+    visibility: hidden;
+  }
+
+  .medical-record-modal,
+  .medical-record-modal * {
+    visibility: visible;
+  }
+
+  .medical-record-modal-overlay {
+    position: static;
+    background: none;
+    padding: 0;
+  }
+
+  .medical-record-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .medical-record-modal-header {
+    padding: 20px 0;
+  }
+
+  .medical-record-modal-body {
+    padding: 20px 0;
+  }
+
+  .modal-detail-item {
+    border: 1px solid #ddd;
+    background: white;
+  }
+
+  .medical-record-modal-footer {
+    display: none;
+  }
+}
+.secondary-button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background: #f3f4f6;
+}
+
+.medical-record-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 28px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+/* =========================================
+   PRINT RECORD BUTTON
+========================================= */
+
+.print-record-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.print-record-button:hover {
+  background: #eff6ff;
+}
+
+.medical-record-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 28px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+
+/* =========================================
+   PRINT MEDICAL RECORD
+========================================= */
+
+@media print {
+
+  body * {
+    visibility: hidden;
+  }
+
+  .medical-record-modal,
+  .medical-record-modal * {
+    visibility: visible;
+  }
+
+  .medical-record-modal-overlay {
+    position: static;
+    background: none;
+    padding: 0;
+  }
+
+  .medical-record-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .medical-record-modal-header {
+    padding: 20px 0;
+  }
+
+  .medical-record-modal-body {
+    padding: 20px 0;
+  }
+
+  .modal-detail-item {
+    border: 1px solid #ddd;
+    background: white;
+  }
+
+  .medical-record-modal-footer {
+    display: none !important;
+  }
+}
+/* =========================================
+   PRINT MEDICAL REPORT
+========================================= */
+
+.print-report-header {
+  display: none;
+}
+
+.print-record-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.print-record-button:hover {
+  background: #eff6ff;
+}
+
+.medical-record-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 28px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+@media print {
+
+  body * {
+    visibility: hidden;
+  }
+
+  .medical-record-modal,
+  .medical-record-modal * {
+    visibility: visible;
+  }
+
+  .medical-record-modal-overlay {
+    position: static;
+    background: white;
+    padding: 0;
+  }
+
+  .medical-record-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    background: white;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-report-header {
+    display: block !important;
+    visibility: visible !important;
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .print-report-header * {
+    visibility: visible !important;
+  }
+
+  .print-report-header h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+  }
+
+  .print-report-header h2 {
+    margin: 0 0 15px;
+    font-size: 20px;
+  }
+
+  .print-report-header p {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+
+  .medical-record-modal-header {
+    padding: 15px 0;
+  }
+
+  .medical-record-modal-body {
+    padding: 15px 0;
+  }
+
+  .modal-detail-item {
+    border: 1px solid #d1d5db;
+    background: white;
+    padding: 18px;
+    margin-bottom: 12px;
+    break-inside: avoid;
+  }
+
+  .prescription-print-section {
+    border: 2px solid #2563eb;
+  }
+
+  .medical-record-modal-footer {
+    display: none !important;
+  }
+}
