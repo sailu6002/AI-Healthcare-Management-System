@@ -1,12 +1,18 @@
 package com.healthcare.backend.repository;
+<<<<<<< HEAD
 
 import java.util.List;
 import java.util.Optional;
+=======
+import java.time.LocalDate;
+import java.util.List;
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.healthcare.backend.model.Appointment;
 
+<<<<<<< HEAD
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
     // Get appointments for a specific patient
@@ -39,4 +45,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     // Find all active appointments for reminder processing
     List<Appointment> findByStatusNot(String status);
+=======
+public interface AppointmentRepository extends JpaRepository<Appointment, Long>{
+
+    List<Appointment> findByPatientIdOrderByAppointmentDateDescAppointmentTimeDesc(
+            Long patientId);
+
+    List<Appointment> findByDoctorIdAndAppointmentDateAndStatus(
+            Long doctorId, LocalDate appointmentDate, String status);
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 }

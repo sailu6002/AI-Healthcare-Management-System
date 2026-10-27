@@ -1,11 +1,17 @@
 package com.healthcare.backend.controller;
+<<<<<<< HEAD
 
+=======
+import java.security.Principal;
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+<<<<<<< HEAD
 import com.healthcare.backend.dto.SlotAvailabilityDto;
 import com.healthcare.backend.exception.AppointmentConflictException;
+=======
+import com.healthcare.backend.dto.AppointmentRequest;
+import com.healthcare.backend.dto.AppointmentView;
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 import com.healthcare.backend.model.Appointment;
 import com.healthcare.backend.service.AppointmentService;
 
@@ -31,6 +42,7 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
+<<<<<<< HEAD
     // Create appointment with validation and double-booking prevention
     @PostMapping
     public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
@@ -122,7 +134,48 @@ public class AppointmentController {
     }
 
     // Get all appointments
+=======
+    // Patient books a slot. Patient identity comes from the JWT principal.
+    @PostMapping
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<AppointmentView> createAppointment(
+            @RequestBody AppointmentRequest request,
+            Principal principal) {
+
+        AppointmentView booking =
+                appointmentService.createBooking(principal.getName(), request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(booking);
+    }
+
+    // Patient's own appointment history.
+    @GetMapping("/mine")
+    @PreAuthorize("hasRole('PATIENT')")
+    public List<AppointmentView> getMyAppointments(Principal principal) {
+        return appointmentService.getMyAppointments(principal.getName());
+    }
+
+    // Patient cancels their own appointment; ADMIN may cancel any.
+    @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasAnyRole('PATIENT','ADMIN')")
+    public AppointmentView cancelAppointment(
+            @PathVariable Long id,
+            Authentication authentication,
+            Principal principal) {
+
+        boolean admin = authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+
+        return appointmentService.cancel(principal.getName(), admin, id);
+    }
+
+    // ------------------------------------------------------------------
+    // Administrative endpoints
+    // ------------------------------------------------------------------
+
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Appointment> getAllAppointments() {
         return appointmentService.getAllAppointments();
     }
@@ -141,6 +194,7 @@ public class AppointmentController {
 
     // Get appointment by ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Appointment> getAppointmentById(@PathVariable Long id) {
         Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
         return appointment
@@ -150,7 +204,12 @@ public class AppointmentController {
 
     // Update appointment
     @PutMapping("/{id}")
+<<<<<<< HEAD
     public ResponseEntity<?> updateAppointment(
+=======
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Appointment> updateAppointment(
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
             @PathVariable Long id,
             @RequestBody Appointment appointmentDetails) {
         try {
@@ -165,8 +224,13 @@ public class AppointmentController {
 
     // Delete appointment
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.noContent().build();
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 }

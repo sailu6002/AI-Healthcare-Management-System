@@ -6,8 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD
 import com.healthcare.backend.model.Doctor;
 import com.healthcare.backend.model.Patient;
+=======
+import com.healthcare.backend.exception.AuthException;
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 import com.healthcare.backend.model.User;
 import com.healthcare.backend.repository.DoctorRepository;
 import com.healthcare.backend.repository.PatientRepository;
@@ -34,6 +38,7 @@ public class UserService {
     }
 
     public User register(User user) {
+<<<<<<< HEAD
         if (user == null) {
             throw new IllegalArgumentException("User registration payload cannot be null.");
         }
@@ -80,6 +85,17 @@ public class UserService {
         user.setFullName(user.getFullName().trim());
         user.setEmail(normalizedEmail);
         user.setRole(normalizedRole);
+=======
+
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new AuthException("Email already registered", 409);
+        }
+
+        // Public registration must never be able to choose a privileged role.
+        // Any client-supplied role (including "ADMIN") is ignored.
+        user.setRole("PATIENT");
+
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepository.save(user);
@@ -108,11 +124,20 @@ public class UserService {
         return savedUser;
     }
 
+    public User getByEmail(String email) {
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new AuthException("Invalid email or password", 401));
+    }
+
+
     public User login(String email, String password) {
         if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("Email and password are required.");
         }
 
+<<<<<<< HEAD
         String normalizedEmail = email.trim().toLowerCase();
 
         User user = userRepository.findByEmail(normalizedEmail)
@@ -126,6 +151,14 @@ public class UserService {
                 return user;
             }
             throw new IllegalArgumentException("Invalid email or password.");
+=======
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new AuthException("Invalid email or password", 401));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new AuthException("Invalid email or password", 401);
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
         }
 
         return user;

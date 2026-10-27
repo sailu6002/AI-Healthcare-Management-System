@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 
 function Dashboard({ onNavigate }) {
   // Get logged-in user details from localStorage
@@ -169,6 +170,41 @@ function Dashboard({ onNavigate }) {
       year: "numeric",
     });
   };
+=======
+import { getMyAppointments } from "../api/appointments";
+
+function Dashboard({ onNavigate, token, fullName }) {
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentsLoaded, setAppointmentsLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const data = await getMyAppointments(token);
+        if (!cancelled) {
+          setAppointments(Array.isArray(data) ? data : []);
+        }
+      } catch {
+        // A missing profile simply means no appointments yet.
+      } finally {
+        if (!cancelled) {
+          setAppointmentsLoaded(true);
+        }
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  const upcoming = appointments.filter(
+    (appointment) => appointment.status === "BOOKED"
+  );
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 
   return (
     <div className="dashboard-layout">
@@ -290,8 +326,13 @@ function Dashboard({ onNavigate }) {
           <div className="patient-profile">
             <div className="patient-avatar">👤</div>
             <div>
+<<<<<<< HEAD
               <strong>{patientDetails?.fullName || user?.fullName || "Patient"}</strong>
               <small>Patient Account • ID #{patientDetails?.patientId || user?.patientId || "N/A"}</small>
+=======
+              <strong>{fullName || "Patient"}</strong>
+              <small>Patient Account</small>
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
             </div>
           </div>
         </header>
@@ -299,7 +340,11 @@ function Dashboard({ onNavigate }) {
         {/* Welcome Section */}
         <section className="welcome-section">
           <h2>
+<<<<<<< HEAD
             Good Morning, {patientDetails?.fullName || user?.fullName || "Patient"}! 👋
+=======
+            Good Morning, {fullName || "Patient"}! 👋
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
           </h2>
           <p>
             Welcome to your patient portal. Manage your appointments and view your clinical medical records.
@@ -383,8 +428,15 @@ function Dashboard({ onNavigate }) {
             <div className="card-icon">📅</div>
             <div>
               <h3>Appointments</h3>
+<<<<<<< HEAD
               <p className="card-number">{loading ? "..." : appointmentCount}</p>
               <span>Consultations scheduled</span>
+=======
+              <p className="card-number">
+                {appointmentsLoaded ? upcoming.length : "…"}
+              </p>
+              <span>Upcoming appointments</span>
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
             </div>
           </div>
 
@@ -439,6 +491,10 @@ function Dashboard({ onNavigate }) {
             </div>
           </div>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
           <button
             className="ai-button"
             onClick={() => onNavigate("assistant")}
@@ -463,6 +519,7 @@ function Dashboard({ onNavigate }) {
             <p style={{ padding: "20px", color: "#64748b" }}>Loading medical activities...</p>
           )}
 
+<<<<<<< HEAD
           {!loading && recentActivities.length === 0 && (
             <div style={{ padding: "30px 20px", textAlign: "center", color: "#64748b" }}>
               <p style={{ fontSize: "15px", marginBottom: "12px" }}>
@@ -494,6 +551,38 @@ function Dashboard({ onNavigate }) {
                 <span className="activity-date">{formatDate(activity.date)}</span>
               </div>
             ))}
+=======
+          {appointments.length === 0 ? (
+            <p style={{ color: "#6b7280", fontSize: "14px" }}>
+              No appointments yet. Book one from the Appointments page.
+            </p>
+          ) : (
+            appointments.slice(0, 5).map((appointment) => (
+              <div className="activity" key={appointment.appointmentId}>
+                <div className="activity-icon">🩺</div>
+
+                <div className="activity-details">
+
+                  <h4>
+                    {appointment.doctorName || "Appointment"}
+                  </h4>
+
+                  <p>
+                    {appointment.specialization || "Consultation"} —{" "}
+                    {appointment.status}
+                  </p>
+
+                </div>
+
+                <span className="activity-date">
+                  {appointment.appointmentDate}
+                </span>
+
+              </div>
+            ))
+          )}
+
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
         </section>
       </main>
     </div>

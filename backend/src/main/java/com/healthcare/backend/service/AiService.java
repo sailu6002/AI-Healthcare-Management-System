@@ -7,16 +7,21 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+=======
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthcare.backend.dto.AiAssessmentRequest;
+import com.healthcare.backend.exception.AiServiceException;
 
 @Service
 public class AiService {
@@ -29,11 +34,27 @@ public class AiService {
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
+    private final String baseUrl;
+    private final Duration requestTimeout;
 
+<<<<<<< HEAD
     public AiService() {
         this.httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(3))
+=======
+    public AiService(
+            @Value("${ai.service.base-url:http://127.0.0.1:8000}") String baseUrl,
+            @Value("${ai.service.connect-timeout-ms:3000}") long connectTimeoutMs,
+            @Value("${ai.service.request-timeout-ms:15000}") long requestTimeoutMs) {
+
+        this.baseUrl = baseUrl.replaceAll("/+$", "");
+        this.requestTimeout = Duration.ofMillis(requestTimeoutMs);
+
+        this.httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofMillis(connectTimeoutMs))
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
                 .build();
         this.objectMapper = new ObjectMapper();
     }
@@ -41,9 +62,13 @@ public class AiService {
     public String checkHealth() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://127.0.0.1:8000/health"))
+                    .uri(URI.create(baseUrl + "/health"))
                     .version(HttpClient.Version.HTTP_1_1)
+<<<<<<< HEAD
                     .timeout(Duration.ofSeconds(3))
+=======
+                    .timeout(requestTimeout)
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
                     .GET()
                     .build();
 
@@ -54,8 +79,28 @@ public class AiService {
 
             return response.body();
 
+<<<<<<< HEAD
         } catch (Exception e) {
             return "{\"status\":\"python_microservice_offline\",\"message\":\"FastAPI AI service at port 8000 is not reachable. Local fallback risk evaluation active.\"}";
+=======
+        } catch (IOException e) {
+
+            throw new AiServiceException(
+                    "Failed to connect to AI service",
+                    true,
+                    e
+            );
+
+        } catch (InterruptedException e) {
+
+            Thread.currentThread().interrupt();
+
+            throw new AiServiceException(
+                    "AI health request was interrupted",
+                    true,
+                    e
+            );
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
         }
     }
 
@@ -82,6 +127,7 @@ public class AiService {
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8))
                     .build();
 
+<<<<<<< HEAD
             HttpResponse<String> response = httpClient.send(
                     httpRequest,
                     HttpResponse.BodyHandlers.ofString()
@@ -89,6 +135,43 @@ public class AiService {
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 return response.body();
+=======
+            HttpRequest httpRequest =
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(baseUrl + "/api/v1/assess"))
+                            .version(HttpClient.Version.HTTP_1_1)
+                            .timeout(requestTimeout)
+                            .header(
+                                    "Content-Type",
+                                    "application/json; charset=UTF-8"
+                            )
+                            .header(
+                                    "Accept",
+                                    "application/json"
+                            )
+                            .POST(
+                                    HttpRequest.BodyPublishers.ofString(
+                                            jsonBody,
+                                            StandardCharsets.UTF_8
+                                    )
+                            )
+                            .build();
+
+            HttpResponse<String> response =
+                    httpClient.send(
+                            httpRequest,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            // Handle error response
+            if (response.statusCode() >= 400) {
+
+                throw new AiServiceException(
+                        "AI service returned HTTP "
+                                + response.statusCode(),
+                        false
+                );
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
             }
 
             System.err.println("FastAPI returned status " + response.statusCode() + ". Falling back to local assessment.");
@@ -242,7 +325,34 @@ public class AiService {
         try {
             return objectMapper.writeValueAsString(resp);
         } catch (JsonProcessingException e) {
+<<<<<<< HEAD
             return "{\"error\":\"Serialization error\"}";
+=======
+
+            throw new AiServiceException(
+                    "Failed to convert AI request to JSON",
+                    false,
+                    e
+            );
+
+        } catch (IOException e) {
+
+            throw new AiServiceException(
+                    "Failed to connect to AI service",
+                    true,
+                    e
+            );
+
+        } catch (InterruptedException e) {
+
+            Thread.currentThread().interrupt();
+
+            throw new AiServiceException(
+                    "AI request was interrupted",
+                    true,
+                    e
+            );
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
         }
     }
 }

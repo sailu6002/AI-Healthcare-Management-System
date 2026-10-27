@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { login, register } from "../api/auth";
 
 function Login({ onLogin }) {
+<<<<<<< HEAD
   const [isSignUp, setIsSignUp] = useState(false);
 
   // Login form state - strictly empty by default
@@ -37,10 +39,28 @@ function Login({ onLogin }) {
   };
 
   const handleLogin = async (event) => {
+=======
+  const [mode, setMode] = useState("login");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const isRegister = mode === "register";
+
+  const switchMode = () => {
+    setMode(isRegister ? "login" : "register");
+    setError("");
+  };
+
+  const handleSubmit = async (event) => {
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
     event.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
 
+<<<<<<< HEAD
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !password) {
       setErrorMessage("Please enter your email and password.");
@@ -206,6 +226,30 @@ function Login({ onLogin }) {
       setErrorMessage("Unable to connect to the backend server. Please try again later.");
     } finally {
       setIsLoading(false);
+=======
+    if (isSubmitting) {
+      return;
+    }
+
+    if (!email || !password || (isRegister && !fullName)) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const session = isRegister
+        ? await register({ fullName, email, password })
+        : await login(email, password);
+
+      onLogin(session);
+    } catch (requestError) {
+      setError(requestError.message || "Unable to sign in. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
     }
   };
 
@@ -220,6 +264,7 @@ function Login({ onLogin }) {
           Intelligent Healthcare Management System
         </p>
 
+<<<<<<< HEAD
         <h2>{isSignUp ? "Create an Account" : "Sign In to Your Account"}</h2>
 
         {/* Feedback Alert Banners */}
@@ -227,16 +272,57 @@ function Login({ onLogin }) {
           <div className="auth-alert-error" role="alert">
             <span className="auth-alert-icon">⚠️</span>
             <div className="auth-alert-content">{errorMessage}</div>
+=======
+        <h2>{isRegister ? "Create Account" : "Login"}</h2>
+
+        <form onSubmit={handleSubmit}>
+
+          {isRegister && (
+            <div className="input-group">
+              <label>Full Name</label>
+              <input
+                type="text"
+                placeholder="Enter your full name"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+          )}
+
+          <div className="input-group">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              disabled={isSubmitting}
+            />
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
           </div>
         )}
 
+<<<<<<< HEAD
         {successMessage && (
           <div className="auth-alert-success" role="status">
             <span className="auth-alert-icon">✅</span>
             <div className="auth-alert-content">{successMessage}</div>
+=======
+          <div className="input-group">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              disabled={isSubmitting}
+            />
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
           </div>
         )}
 
+<<<<<<< HEAD
         {!isSignUp ? (
           /* ================= LOGIN FORM ================= */
           <form onSubmit={handleLogin} noValidate>
@@ -263,6 +349,37 @@ function Login({ onLogin }) {
                   <span className="role-pill-icon">👤</span>
                   <span>Patient</span>
                 </button>
+=======
+          {error && (
+            <p
+              style={{
+                color: "#b91c1c",
+                background: "#fef2f2",
+                border: "1px solid #fecaca",
+                borderRadius: "8px",
+                padding: "10px 12px",
+                fontSize: "14px",
+                marginBottom: "12px",
+              }}
+            >
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="login-button"
+            disabled={isSubmitting}
+          >
+            {isSubmitting
+              ? isRegister
+                ? "Creating account..."
+                : "Signing in..."
+              : isRegister
+                ? "Sign Up"
+                : "Login"}
+          </button>
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
 
                 <button
                   type="button"
@@ -541,6 +658,7 @@ function Login({ onLogin }) {
 
         {/* Toggle between Login and Sign Up */}
         <p className="signup-text">
+<<<<<<< HEAD
           {!isSignUp ? (
             <>
               Don't have an account?{" "}
@@ -564,6 +682,15 @@ function Login({ onLogin }) {
               </button>
             </>
           )}
+=======
+          {isRegister ? "Already have an account? " : "Don't have an account? "}
+          <span
+            onClick={isSubmitting ? undefined : switchMode}
+            style={{ cursor: isSubmitting ? "default" : "pointer" }}
+          >
+            {isRegister ? "Login" : "Sign Up"}
+          </span>
+>>>>>>> 3c0ee2c79f132e522dff7a4eab30667464e81af1
         </p>
       </div>
     </div>

@@ -51,7 +51,7 @@ python -m src.train        # retrain models + metrics reports
 # run the service
 uvicorn app.main:app --reload --port 8000
 
-# run the test suite (19 tests)
+# run the test suite (28 tests)
 pytest tests/ -v
 ```
 
@@ -157,7 +157,7 @@ replace - qualified healthcare professionals.
 | Leakage-safe preprocessing (seed 42, stratified) | done |
 | Model training & selection (LR vs RF, ROC-AUC primary) | done |
 | Rules engine (bands, overall score, tests/specialists) | done |
-| FastAPI integration + pytest suite (19 passing) | done |
+| FastAPI integration + pytest suite (28 passing) | done |
 | Docker / cloud deployment | future semester work |
 | Additional diseases / symptom NLP model | future extension |
 
